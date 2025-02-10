@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Empresa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 -->
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card p-5 shadow">
+            <h2 class="text-center mb-5">Registro de Empresa</h2>
+            <form id="formulario">
+                
+                <div class="mb-3">
+                    <label for="Razon" class="form-label">Razón Social</label>
+                    <input type="text" id="Razon" class="form-control" placeholder="Ingresa el nombre de la empresa">
+                    <span class="error text-danger" id="error-Razon"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="RFC" class="form-label">RFC</label>
+                        <input type="text" id="RFC" class="form-control" placeholder="Ingresa el RFC">
+                        <span class="error text-danger" id="error-RFC"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Número de Celular</label>
+                        <div class="input-group">
+                            <select id="Lada" class="form-select">
+                                <option value="+52">MX +52 </option>
+                                <option value="+1">USA +1 </option>
+                                <option value="+34">ESP +34 </option>
+                                <option value="+55">BR +55 </option>
+                                <option value="+54">ARG +54</option>
+                                <option value="+57">COL +57</option>
+                            </select>
+                            <input type="text" id="Tel" class="form-control" placeholder="Ingresa número telefónico">
+                        </div>
+                        <span class="error text-danger" id="error-Tel"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="contacto" class="form-label">Nombre del Contacto</label>
+                    <input type="text" id="contacto" class="form-control" placeholder="Ingresa el nombre completo de la persona">
+                    <span class="error text-danger" id="error-contacto"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Correo" class="form-label">Correo Electrónico</label>
+                    <input type="email" id="Correo" class="form-control" placeholder="Ingresa el correo electrónico">
+                    <span class="error text-danger" id="error-Correo"></span>
+                </div>
+
+                <button type="submit" id="registrar" class="btn btn-primary w-100" disabled>Registrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const razonSocial = document.getElementById("Razon");
+            const rfc = document.getElementById("RFC");
+            const celular = document.getElementById("Tel");
+            const lada = document.getElementById("Lada");
+            const nombreContacto = document.getElementById("contacto");
+            const correo = document.getElementById("Correo");
+            const registrarBtn = document.getElementById("registrar");
+
+            const errores = {
+                razon: document.getElementById("error-Razon"),
+                rfc: document.getElementById("error-RFC"),
+                tel: document.getElementById("error-Tel"),
+                contacto: document.getElementById("error-contacto"),
+                correo: document.getElementById("error-Correo")
+            };
+
+            function validarCampos() {
+                let valido = true;
+
+                if (!/^[a-zA-Z\s]+$/.test(razonSocial.value.trim())) {
+                    errores.razon.textContent = "Solo se permiten letras y espacios.";
+                    valido = false;
+                } else {
+                    errores.razon.textContent = "";
+                }
+
+                if (!/^[a-zA-Z0-9]+$/.test(rfc.value.trim())) {
+                    errores.rfc.textContent = "El RFC solo debe contener letras y números.";
+                    valido = false;
+                } else {
+                    errores.rfc.textContent = "";
+                }
+
+                if (!/^\d{10}$/.test(celular.value.trim())) {
+                    errores.tel.textContent = "El número debe tener exactamente 10 dígitos.";
+                    valido = false;
+                } else {
+                    errores.tel.textContent = "";
+                }
+
+                if (!/^[a-zA-Z\s]{1,50}$/.test(nombreContacto.value.trim())) {
+                    errores.contacto.textContent = "Máximo 50 caracteres y solo letras.";
+                    valido = false;
+                } else {
+                    errores.contacto.textContent = "";
+                }
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/.test(correo.value.trim())) {
+                    errores.correo.textContent = "Formato de correo incorrecto.";
+                    valido = false;
+                } else {
+                    errores.correo.textContent = "";
+                }
+
+                registrarBtn.disabled = !valido;
+            }
+
+            razonSocial.addEventListener("input", validarCampos);
+            rfc.addEventListener("input", validarCampos);
+            celular.addEventListener("input", validarCampos);
+            nombreContacto.addEventListener("input", validarCampos);
+            correo.addEventListener("input", validarCampos);
+            lada.addEventListener("change", validarCampos);
+
+            document.getElementById("formulario").addEventListener("submit", function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: "¡Registro exitoso!",
+                    text: `La empresa ha sido registrada correctamente.`,
+                    icon: "success",
+                    confirmButtonText: "Aceptar"
+                });
+            });
+
+            validarCampos();
+        });
+    </script>
+</body>
+</html>
