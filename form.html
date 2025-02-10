@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Empresa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="card p-5 shadow">
             <h2 class="text-center mb-5">Registro de Empresa</h2>
             <form id="formulario">
-                
+
                 <div class="mb-3">
                     <label for="Razon" class="form-label">Razón Social</label>
                     <input type="text" id="Razon" class="form-control" placeholder="Ingresa el nombre de la empresa">
@@ -26,7 +28,7 @@
                         <input type="text" id="RFC" class="form-control" placeholder="Ingresa el RFC">
                         <span class="error text-danger" id="error-RFC"></span>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Número de Celular</label>
                         <div class="input-group">
@@ -43,7 +45,7 @@
                         <span class="error text-danger" id="error-Tel"></span>
                     </div>
                 </div>
-                
+
                 <div class="mb-3">
                     <label for="contacto" class="form-label">Nombre del Contacto</label>
                     <input type="text" id="contacto" class="form-control" placeholder="Ingresa el nombre completo de la persona">
@@ -83,19 +85,19 @@
                 let valido = true;
 
                 if (!/^[a-zA-Z\s]+$/.test(razonSocial.value.trim())) {
-                    errores.razon.textContent = "Solo se permiten letras y espacios.";
+                    errores.razon.textContent = "Solo se permiten letras y.";
                     valido = false;
                 } else {
                     errores.razon.textContent = "";
                 }
 
-                if (!/^[a-zA-Z0-9]+$/.test(rfc.value.trim())) {
-                    errores.rfc.textContent = "El RFC solo debe contener letras y números.";
+                if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{10,13}$/.test(rfc.value.trim())) {
+                    errores.rfc.textContent = "El RFC debe contener letras y números (10-13 caracteres).";
                     valido = false;
                 } else {
                     errores.rfc.textContent = "";
                 }
-
+                
                 if (!/^\d{10}$/.test(celular.value.trim())) {
                     errores.tel.textContent = "El número debe tener exactamente 10 dígitos.";
                     valido = false;
@@ -141,4 +143,5 @@
         });
     </script>
 </body>
+
 </html>
