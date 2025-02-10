@@ -89,8 +89,8 @@
                     errores.razon.textContent = "";
                 }
 
-                if (!/^[a-zA-Z0-9]+$/.test(rfc.value.trim())) {
-                    errores.rfc.textContent = "El RFC solo debe contener letras y números.";
+               if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{10,13}$/.test(rfc.value.trim())) {
+                    errores.rfc.textContent = "El RFC debe contener letras y números (10-13 caracteres).";
                     valido = false;
                 } else {
                     errores.rfc.textContent = "";
