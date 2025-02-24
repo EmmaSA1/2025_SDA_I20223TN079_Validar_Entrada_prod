@@ -7,7 +7,7 @@
     <title>Registro de Empresa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -19,14 +19,14 @@
                 <div class="mb-3">
                     <label for="Razon" class="form-label">Razón Social</label>
                     <input type="text" id="Razon" class="form-control" placeholder="Ingresa el nombre de la empresa">
-                    <span class="error text-danger" id="error-Razon"></span>
+                    <span class="error" id="error-Razon"></span>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="RFC" class="form-label">RFC</label>
                         <input type="text" id="RFC" class="form-control" placeholder="Ingresa el RFC">
-                        <span class="error text-danger" id="error-RFC"></span>
+                        <span class="error" id="error-RFC"></span>
                     </div>
 
                     <div class="col-md-6">
@@ -42,24 +42,31 @@
                             </select>
                             <input type="text" id="Tel" class="form-control" placeholder="Ingresa número telefónico">
                         </div>
-                        <span class="error text-danger" id="error-Tel"></span>
+                        <span class="error" id="error-Tel"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="contacto" class="form-label">Nombre del Contacto</label>
-                    <input type="text" id="contacto" class="form-control" placeholder="Ingresa el nombre completo de la persona">
-                    <span class="error text-danger" id="error-contacto"></span>
+                    <input type="text" id="contacto" class="form-control"
+                        placeholder="Ingresa el nombre completo de la persona">
+                    <span class="error" id="error-contacto"></span>
                 </div>
 
                 <div class="mb-3">
                     <label for="Correo" class="form-label">Correo Electrónico</label>
                     <input type="email" id="Correo" class="form-control" placeholder="Ingresa el correo electrónico">
-                    <span class="error text-danger" id="error-Correo"></span>
+                    <span class="error" id="error-Correo"></span>
                 </div>
 
                 <button type="submit" id="registrar" class="btn btn-primary w-100" disabled>Registrar</button>
             </form>
+
+            <!-- Botón para obtener empresas -->
+            <button id="obtenerEmpresasBtn" class="btn btn-secondary mt-4">Obtener Empresas</button>
+
+            <!-- Contenedor para mostrar la lista de empresas -->
+            <div id="empresas-list" class="mt-4"></div>
         </div>
     </div>
 
@@ -68,7 +75,6 @@
             const razonSocial = document.getElementById("Razon");
             const rfc = document.getElementById("RFC");
             const celular = document.getElementById("Tel");
-            const lada = document.getElementById("Lada");
             const nombreContacto = document.getElementById("contacto");
             const correo = document.getElementById("Correo");
             const registrarBtn = document.getElementById("registrar");
@@ -84,34 +90,40 @@
             function validarCampos() {
                 let valido = true;
 
-                if (!/^[a-zA-Z\s]+$/.test(razonSocial.value.trim())) {
-                    errores.razon.textContent = "Solo se permiten letras y.";
+                // Validación de razón social: Solo letras y espacios, permitiendo múltiples palabras
+                if (!/^[a-zA-Z0-9\s&\-,.]+$/.test(razonSocial.value.trim()) || razonSocial.value.trim() === "") {
+                    errores.razon.textContent = "Debe ingresar un nombre válido.";
                     valido = false;
                 } else {
                     errores.razon.textContent = "";
                 }
 
-                if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{10,13}$/.test(rfc.value.trim())) {
-                    errores.rfc.textContent = "El RFC debe contener letras y números (10-13 caracteres).";
+
+                if (!/^[A-Za-z\d]{10,13}$/.test(rfc.value.trim())) {
+                    errores.rfc.textContent = "Debe contener entre 10 y 13 caracteres, solo letras y números.";
                     valido = false;
                 } else {
                     errores.rfc.textContent = "";
                 }
-                
-                if (!/^\d{10}$/.test(celular.value.trim())) {
-                    errores.tel.textContent = "El número debe tener exactamente 10 dígitos.";
+
+
+                if (!/^(?!0{10}$)\d{10}$/.test(celular.value.trim())) {
+                    errores.tel.textContent = "Debe ser un número de 10 dígitos válido (no repetitivo).";
                     valido = false;
                 } else {
                     errores.tel.textContent = "";
                 }
 
+
+
                 if (!/^[a-zA-Z\s]{1,50}$/.test(nombreContacto.value.trim())) {
-                    errores.contacto.textContent = "Máximo 50 caracteres y solo letras.";
+                    errores.contacto.textContent = "Máximo 50 caracteres y solo letras con espacios permitidos.";
                     valido = false;
                 } else {
                     errores.contacto.textContent = "";
                 }
 
+                // Validación de correo: Formato correcto y que no tenga espacios
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/.test(correo.value.trim())) {
                     errores.correo.textContent = "Formato de correo incorrecto.";
                     valido = false;
@@ -122,22 +134,69 @@
                 registrarBtn.disabled = !valido;
             }
 
+
             razonSocial.addEventListener("input", validarCampos);
             rfc.addEventListener("input", validarCampos);
             celular.addEventListener("input", validarCampos);
             nombreContacto.addEventListener("input", validarCampos);
             correo.addEventListener("input", validarCampos);
-            lada.addEventListener("change", validarCampos);
+
+            async function registrarEmpresa() {
+                const data = {
+                    razonSocial: razonSocial.value.trim(),
+                    rfc: rfc.value.trim(),
+                    telefono: celular.value.trim(),
+                    nombreContacto: nombreContacto.value.trim(),
+                    correo: correo.value.trim()
+                };
+
+                try {
+                    const response = await fetch("http://localhost:8080/empresas/registrar", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(await response.text());
+                    }
+
+                    const result = await response.json();
+                    Swal.fire("¡Éxito!", `La empresa ${result.razonSocial} ha sido registrada.`, "success");
+                } catch (error) {
+                    Swal.fire("Error", error.message, "error");
+                }
+            }
+
+            async function obtenerEmpresas() {
+                try {
+                    const response = await fetch("http://localhost:8080/empresas/");
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+
+                    const empresas = await response.json();
+                    const empresasDiv = document.getElementById('empresas-list');
+
+                    empresasDiv.innerHTML = empresas.map(empresa => `
+            <div class="d-flex justify-content-between align-items-center border p-2">
+                <p class="m-0">${empresa.razonSocial}</p>
+                <a href="detalles.html?uuid=${empresa.uuid}" class="btn btn-dark btn-white">Obtener más información</a>
+            </div>
+        `).join('');
+                } catch (error) {
+                    Swal.fire("Error", error.message, "error");
+                }
+            }
+
+
 
             document.getElementById("formulario").addEventListener("submit", function (event) {
                 event.preventDefault();
-                Swal.fire({
-                    title: "¡Registro exitoso!",
-                    text: `La empresa ha sido registrada correctamente.`,
-                    icon: "success",
-                    confirmButtonText: "Aceptar"
-                });
+                registrarEmpresa();
             });
+
+            document.getElementById("obtenerEmpresasBtn").addEventListener("click", obtenerEmpresas);
 
             validarCampos();
         });

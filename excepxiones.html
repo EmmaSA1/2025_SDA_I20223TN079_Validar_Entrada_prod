@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Excepciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Prueba de Excepciones con Fetch</h1>
+
+        <div class="row justify-content-center text-center">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <button class="btn btn-secondary w-100" onclick="testEndpoint('/division-cero')">Probar División por Cero</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-secondary w-100" onclick="testEndpoint('/estado-ilegal')">Probar Estado Ilegal</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-secondary w-100" onclick="testEndpoint('/operacion-no-soportada')">Probar Operación No Soportada</button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-secondary w-100" onclick="testEndpoint('/recurso')">Probar Recurso (sin ID)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="result" class="result text-center"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const BASE_URL = "http://localhost:8080";
+
+        async function testEndpoint(endpoint) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; 
+
+            try {
+                const response = await fetch(`${BASE_URL}${endpoint}`);
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${await response.text()}`);
+                }
+                const data = await response.text();
+                resultDiv.innerHTML = `<p class="alert alert-success">Respuesta de ${endpoint}: ${data}</p>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="alert alert-danger">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
